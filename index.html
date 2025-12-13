@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bilingual Bingo Caller (JP + EN)</title>
+
+  <style>
+    :root{
+      --bg0:#070915;
+      --bg1:#0b1230;
+      --glass: rgba(255,255,255,.06);
+      --glass2: rgba(255,255,255,.035);
+      --stroke: rgba(255,255,255,.12);
+      --stroke2: rgba(255,255,255,.08);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.62);
+
+      --accentA:#00ffd1;
+      --accentB:#7c5cff;
+      --accentC:#2a7cff;
+
+      --calledBg: rgba(0,255,209,.92);
+      --calledText: #072117;
+
+      --shadow: 0 18px 50px rgba(0,0,0,.45);
+      --shadowSoft: 0 10px 26px rgba(0,0,0,.25);
+      --radiusXL: 28px;
+      --radiusL: 20px;
+      --radiusM: 14px;
+
+      --pad: 18px;
+    }
+
+    *{ box-sizing: border-box; }
+    html, body{ height:100%; }
+    body{
+      margin:0;
+      overflow:hidden;
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background:
+        radial-gradient(1000px 700px at 20% 25%, rgba(124,92,255,.20), transparent 60%),
+        radial-gradient(900px 650px at 75% 35%, rgba(0,255,209,.18), transparent 55%),
+        radial-gradient(1100px 900px at 60% 90%, rgba(42,124,255,.18), transparent 60%),
+        linear-gradient(180deg, var(--bg1), var(--bg0));
+    }
+
+    /* a subtle "sparkle" texture without images */
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:.22;
+      background:
+        radial-gradient(circle at 20% 30%, rgba(255,255,255,.25) 0 1px, transparent 2px),
+        radial-gradient(circle at 55% 40%, rgba(255,255,255,.18) 0 1px, transparent 2px),
+        radial-gradient(circle at 80% 20%, rgba(255,255,255,.20) 0 1px, transparent 2px),
+        radial-gradient(circle at 30% 80%, rgba(255,255,255,.14) 0 1px, transparent 2px),
+        radial-gradient(circle at 70% 75%, rgba(255,255,255,.16) 0 1px, transparent 2px);
+      background-size: 420px 420px;
+      filter: blur(.2px);
+    }
+
+    .app{
+      height:100vh;
+      display:flex;
+      padding: 16px;
+      gap: 16px;
+    }
+
+    .col{
+      width:50%;
+      min-width:0;
+      display:flex;
+      flex-direction:column;
+      gap: 14px;
+    }
+
+    .panel{
+      background: linear-gradient(180deg, var(--glass), var(--glass2));
+      border: 1px solid var(--stroke);
+      border-radius: var(--radiusXL);
+      box-shadow: var(--shadowSoft);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      overflow:hidden;
+      position: relative;
+    }
+
+    /* soft highlight border */
+    .panel::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      border-radius: var(--radiusXL);
+      pointer-events:none;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.10);
+    }
+
+    /* LEFT */
+    .latestPanel{
+      flex: 1;
+      min-height:0;
+      display:flex;
+      align-items:stretch;
+      justify-content:stretch;
+      padding: var(--pad);
+    }
+
+    .latestBox{
+      flex:1;
+      border-radius: calc(var(--radiusXL) - 6px);
+      border: 1px solid var(--stroke2);
+      background:
+        radial-gradient(1200px 700px at 30% 20%, rgba(0,255,209,.14), transparent 55%),
+        radial-gradient(900px 650px at 70% 80%, rgba(124,92,255,.12), transparent 60%),
+        linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      padding: 16px;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.05);
+      user-select:none;
+    }
+
+    .latestNumber{
+      font-weight: 950;
+      letter-spacing: .02em;
+      line-height: .95;
+      font-size: clamp(72px, 11vw, 200px);
+      text-shadow: 0 18px 45px rgba(0,0,0,.45);
+    }
+
+    .latestSub{
+      margin-top: 12px;
+      font-weight: 700;
+      color: var(--muted);
+      letter-spacing: .06em;
+      font-size: clamp(14px, 2vw, 26px);
+      line-height: 1.25;
+    }
+
+    .historyPanel{
+      padding: 16px 16px 18px;
+    }
+
+    .titleRow{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom: 12px;
+    }
+
+    .title{
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      font-size: 12px;
+      color: rgba(255,255,255,.70);
+    }
+
+    .pill{
+      font-weight: 800;
+      font-size: 12px;
+      color: rgba(255,255,255,.80);
+      border: 1px solid var(--stroke2);
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.03);
+      letter-spacing:.02em;
+      user-select:none;
+    }
+
+    .historyRow{
+      display:grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+    }
+
+    .histItem{
+      border-radius: 16px;
+      border: 1px solid var(--stroke2);
+      background: rgba(255,255,255,.03);
+      padding: 12px 10px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight: 950;
+      font-size: clamp(16px, 2.2vw, 34px);
+      min-height: 56px;
+      user-select:none;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
+    }
+
+    .histItem.empty{
+      color: rgba(255,255,255,.22);
+      font-weight: 800;
+    }
+
+    /* RIGHT */
+    .gridPanel{
+      flex: 1;
+      min-height: 0;
+      display:flex;
+      flex-direction:column;
+      padding: 16px;
+      gap: 12px;
+    }
+
+    .bingoHeader{
+      display:grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      user-select:none;
+    }
+
+    .bingoHeader div{
+      border-radius: 16px;
+      border: 1px solid var(--stroke2);
+      background:
+        radial-gradient(600px 200px at 50% 0%, rgba(255,255,255,.07), transparent 65%),
+        rgba(255,255,255,.03);
+      text-align:center;
+      padding: 10px 0;
+      font-weight: 950;
+      letter-spacing: .35em;
+      text-indent: .35em; /* keeps letter centered despite spacing */
+      font-size: 18px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
+    }
+
+    .grid{
+      flex:1;
+      min-height:0;
+      display:grid;
+      grid-template-columns: repeat(5, 1fr);
+      grid-template-rows: repeat(15, 1fr);
+      gap: 10px;
+    }
+
+    .cell{
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.10);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight: 950;
+      font-size: clamp(12px, 1.8vw, 20px);
+      color: rgba(255,255,255,.85);
+      user-select:none;
+      transition: transform .12s ease, background .12s ease, box-shadow .12s ease, border-color .12s ease;
+    }
+
+    .cell.called{
+      background:
+        radial-gradient(800px 400px at 40% 20%, rgba(255,255,255,.18), transparent 65%),
+        var(--calledBg);
+      color: var(--calledText);
+      border-color: rgba(0,0,0,.10);
+      box-shadow: 0 18px 35px rgba(0,255,209,.22);
+      transform: translateY(-1px);
+    }
+
+    .controls{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      padding: 0 2px;
+    }
+
+    .status{
+      color: rgba(255,255,255,.68);
+      font-weight: 750;
+      font-size: 13px;
+      letter-spacing: .02em;
+      user-select:none;
+    }
+
+    .nextBtn{
+      border: none;
+      border-radius: 18px;
+      padding: 14px 18px;
+      font-weight: 950;
+      font-size: 18px;
+      cursor: pointer;
+      color: white;
+      background:
+        radial-gradient(120% 140% at 20% 10%, rgba(255,255,255,.26), transparent 45%),
+        linear-gradient(135deg, var(--accentC), var(--accentB));
+      box-shadow: 0 18px 40px rgba(124,92,255,.28);
+      user-select:none;
+      position: relative;
+      overflow:hidden;
+    }
+    .nextBtn::after{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background: radial-gradient(600px 180px at 20% 0%, rgba(255,255,255,.25), transparent 55%);
+      opacity:.55;
+      transform: translateY(-22px);
+      transition: transform .18s ease;
+      pointer-events:none;
+    }
+    .nextBtn:hover::after{ transform: translateY(-8px); }
+    .nextBtn:active{ transform: translateY(1px); }
+    .nextBtn:disabled{
+      cursor:not-allowed;
+      opacity:.55;
+      box-shadow:none;
+      transform:none;
+    }
+
+    /* If portrait, stack; still looks OK */
+    @media (orientation: portrait){
+      .app{ flex-direction:column; }
+      .col{ width:100%; height:50%; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <!-- LEFT -->
+    <section class="col">
+      <div class="panel latestPanel">
+        <div class="latestBox">
+          <div>
+            <div class="latestNumber" id="latestNumber">—</div>
+            <div class="latestSub" id="latestSub">Press Next to start</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel historyPanel">
+        <div class="titleRow">
+          <div class="title">History</div>
+          <div class="pill" id="pill">0 / 75 called</div>
+        </div>
+        <div class="historyRow" id="historyRow"></div>
+      </div>
+    </section>
+
+    <!-- RIGHT -->
+    <section class="col">
+      <div class="panel gridPanel">
+        <div class="bingoHeader">
+          <div>B</div><div>I</div><div>N</div><div>G</div><div>O</div>
+        </div>
+        <div class="grid" id="grid"></div>
+      </div>
+
+      <div class="controls">
+        <div class="status" id="status">Japanese then English voice • Tap once if audio blocked</div>
+        <button class="nextBtn" id="nextBtn">Next →</button>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // -------- Bingo mapping --------
+    function letterForNumber(n){
+      if (n >= 1 && n <= 15) return "B";
+      if (n >= 16
+
