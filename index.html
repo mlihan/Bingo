@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Bilingual Bingo Caller (JP + EN)</title>
+  <title>Azuki's Bingo Party</title>
 
   <style>
     :root{
@@ -23,7 +23,6 @@
       --calledBg: rgba(0,255,209,.92);
       --calledText: #072117;
 
-      --shadow: 0 18px 50px rgba(0,0,0,.45);
       --shadowSoft: 0 10px 26px rgba(0,0,0,.25);
       --radiusXL: 28px;
       --radiusL: 20px;
@@ -46,7 +45,6 @@
         linear-gradient(180deg, var(--bg1), var(--bg0));
     }
 
-    /* a subtle "sparkle" texture without images */
     body::before{
       content:"";
       position:fixed;
@@ -89,7 +87,6 @@
       position: relative;
     }
 
-    /* soft highlight border */
     .panel::after{
       content:"";
       position:absolute;
@@ -99,14 +96,44 @@
       box-shadow: inset 0 1px 0 rgba(255,255,255,.10);
     }
 
+    /* Header title */
+    .header{
+      padding: 14px 18px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+    }
+    .partyTitle{
+      font-weight: 950;
+      letter-spacing: .02em;
+      font-size: clamp(16px, 2.2vw, 22px);
+      line-height: 1.2;
+      user-select:none;
+    }
+    .subHint{
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: .02em;
+      user-select:none;
+      white-space: nowrap;
+    }
+
     /* LEFT */
     .latestPanel{
       flex: 1;
       min-height:0;
       display:flex;
-      align-items:stretch;
-      justify-content:stretch;
+      flex-direction:column;
+      padding: 0;
+    }
+
+    .latestBody{
+      flex:1;
+      min-height:0;
       padding: var(--pad);
+      display:flex;
     }
 
     .latestBox{
@@ -227,7 +254,7 @@
       padding: 10px 0;
       font-weight: 950;
       letter-spacing: .35em;
-      text-indent: .35em; /* keeps letter centered despite spacing */
+      text-indent: .35em;
       font-size: 18px;
       box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
     }
@@ -244,8 +271,7 @@
     .cell{
       border-radius: 16px;
       border: 1px solid rgba(255,255,255,.10);
-      background:
-        linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015));
+      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015));
       box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
       display:flex;
       align-items:center;
@@ -281,25 +307,35 @@
       font-size: 13px;
       letter-spacing: .02em;
       user-select:none;
+      white-space: nowrap;
+      overflow:hidden;
+      text-overflow: ellipsis;
+      max-width: 60%;
     }
 
-    .nextBtn{
+    .btnRow{
+      display:flex;
+      gap: 10px;
+      align-items:center;
+      justify-content:flex-end;
+    }
+
+    .btn{
       border: none;
       border-radius: 18px;
       padding: 14px 18px;
       font-weight: 950;
-      font-size: 18px;
+      font-size: 16px;
       cursor: pointer;
       color: white;
-      background:
-        radial-gradient(120% 140% at 20% 10%, rgba(255,255,255,.26), transparent 45%),
-        linear-gradient(135deg, var(--accentC), var(--accentB));
-      box-shadow: 0 18px 40px rgba(124,92,255,.28);
       user-select:none;
       position: relative;
       overflow:hidden;
+      box-shadow: 0 18px 40px rgba(124,92,255,.20);
+      transform: translateZ(0);
     }
-    .nextBtn::after{
+
+    .btn::after{
       content:"";
       position:absolute;
       inset:-2px;
@@ -309,16 +345,29 @@
       transition: transform .18s ease;
       pointer-events:none;
     }
-    .nextBtn:hover::after{ transform: translateY(-8px); }
-    .nextBtn:active{ transform: translateY(1px); }
-    .nextBtn:disabled{
+    .btn:hover::after{ transform: translateY(-8px); }
+    .btn:active{ transform: translateY(1px); }
+    .btn:disabled{
       cursor:not-allowed;
       opacity:.55;
       box-shadow:none;
       transform:none;
     }
 
-    /* If portrait, stack; still looks OK */
+    .nextBtn{
+      background:
+        radial-gradient(120% 140% at 20% 10%, rgba(255,255,255,.26), transparent 45%),
+        linear-gradient(135deg, var(--accentC), var(--accentB));
+    }
+
+    .resetBtn{
+      background:
+        radial-gradient(120% 140% at 20% 10%, rgba(255,255,255,.20), transparent 45%),
+        linear-gradient(135deg, rgba(255,255,255,.18), rgba(255,255,255,.06));
+      border: 1px solid rgba(255,255,255,.14);
+      box-shadow: 0 12px 28px rgba(0,0,0,.22);
+    }
+
     @media (orientation: portrait){
       .app{ flex-direction:column; }
       .col{ width:100%; height:50%; }
@@ -328,13 +377,20 @@
 
 <body>
   <div class="app">
+
     <!-- LEFT -->
     <section class="col">
       <div class="panel latestPanel">
-        <div class="latestBox">
-          <div>
-            <div class="latestNumber" id="latestNumber">—</div>
-            <div class="latestSub" id="latestSub">Press Next to start</div>
+        <div class="header">
+          <div class="partyTitle">Azuki's Bingo Party</div>
+          <div class="subHint">JP → EN voice</div>
+        </div>
+        <div class="latestBody">
+          <div class="latestBox">
+            <div>
+              <div class="latestNumber" id="latestNumber">—</div>
+              <div class="latestSub" id="latestSub">Press Next to start</div>
+            </div>
           </div>
         </div>
       </div>
@@ -358,15 +414,211 @@
       </div>
 
       <div class="controls">
-        <div class="status" id="status">Japanese then English voice • Tap once if audio blocked</div>
-        <button class="nextBtn" id="nextBtn">Next →</button>
+        <div class="status" id="status">Tip: press Space to call Next</div>
+        <div class="btnRow">
+          <button class="btn resetBtn" id="resetBtn" title="Clear and start over">Reset</button>
+          <button class="btn nextBtn" id="nextBtn">Next →</button>
+        </div>
       </div>
     </section>
+
   </div>
 
   <script>
     // -------- Bingo mapping --------
     function letterForNumber(n){
       if (n >= 1 && n <= 15) return "B";
-      if (n >= 16
+      if (n >= 16 && n <= 30) return "I";
+      if (n >= 31 && n <= 45) return "N";
+      if (n >= 46 && n <= 60) return "G";
+      return "O"; // 61-75
+    }
 
+    // Japanese letter readings (Option 2)
+    const jpLetter = { B: "ビー", I: "アイ", N: "エヌ", G: "ジー", O: "オー" };
+
+    function japaneseNumber(n){
+      const ones = ["", "いち", "に", "さん", "よん", "ご", "ろく", "なな", "はち", "きゅう"];
+      if (n === 0) return "ゼロ";
+      if (n < 10) return ones[n];
+      if (n === 10) return "じゅう";
+
+      const tens = Math.floor(n / 10);
+      const unit = n % 10;
+
+      const tensRead =
+        (tens === 1) ? "じゅう" :
+        (tens === 2) ? "にじゅう" :
+        (tens === 3) ? "さんじゅう" :
+        (tens === 4) ? "よんじゅう" :
+        (tens === 5) ? "ごじゅう" :
+        (tens === 6) ? "ろくじゅう" :
+        (tens === 7) ? "ななじゅう" :
+        (tens === 8) ? "はちじゅう" :
+        (tens === 9) ? "きゅうじゅう" : "";
+
+      return unit === 0 ? tensRead : (tensRead + ones[unit]);
+    }
+
+    // -------- Speech helpers (JP then EN) --------
+    function pickVoice(langPrefix){
+      const voices = window.speechSynthesis?.getVoices?.() || [];
+      let v = voices.find(x => (x.lang || "").toLowerCase().startsWith(langPrefix) && x.localService);
+      if (!v) v = voices.find(x => (x.lang || "").toLowerCase().startsWith(langPrefix));
+      return v || null;
+    }
+
+    function speakBilingual(letter, n){
+      const synth = window.speechSynthesis;
+      if (!synth || !window.SpeechSynthesisUtterance) return;
+
+      synth.cancel();
+
+      const jp = new SpeechSynthesisUtterance(`${jpLetter[letter]}、${japaneseNumber(n)}`);
+      jp.lang = "ja-JP";
+      const jpV = pickVoice("ja");
+      if (jpV) jp.voice = jpV;
+      jp.rate = 0.95;
+
+      const en = new SpeechSynthesisUtterance(`${letter} ${n}`);
+      en.lang = "en-US";
+      const enV = pickVoice("en");
+      if (enV) en.voice = enV;
+      en.rate = 0.95;
+
+      jp.onend = () => synth.speak(en);
+      synth.speak(jp);
+    }
+
+    // -------- UI refs --------
+    const gridEl = document.getElementById("grid");
+    const historyRowEl = document.getElementById("historyRow");
+    const latestNumberEl = document.getElementById("latestNumber");
+    const latestSubEl = document.getElementById("latestSub");
+    const pillEl = document.getElementById("pill");
+    const nextBtn = document.getElementById("nextBtn");
+    const resetBtn = document.getElementById("resetBtn");
+
+    // Build grid 5 cols x 15 rows, numbers arranged by column (B,I,N,G,O)
+    const cellByNumber = new Map();
+    for (let r = 0; r < 15; r++){
+      for (let c = 0; c < 5; c++){
+        const n = r + 1 + c * 15;
+        const cell = document.createElement("div");
+        cell.className = "cell";
+        cell.textContent = n;
+        gridEl.appendChild(cell);
+        cellByNumber.set(n, cell);
+      }
+    }
+
+    function renderHistory(history){
+      historyRowEl.innerHTML = "";
+      const items = history.slice(0, 5);
+      for (let i = 0; i < 5; i++){
+        const div = document.createElement("div");
+        div.className = "histItem" + (items[i] ? "" : " empty");
+        div.textContent = items[i] ? items[i] : "—";
+        historyRowEl.appendChild(div);
+      }
+    }
+
+    // -------- Game state (random unique numbers) --------
+    let remaining = [];        // numbers not yet called
+    let called = new Set();    // numbers already called
+    let historyLabels = [];    // ["B-12", ...] latest-first
+
+    function startNewGame(){
+      remaining = Array.from({length:75}, (_, i) => i + 1);
+      called = new Set();
+      historyLabels = [];
+
+      // Clear UI
+      for (let n = 1; n <= 75; n++){
+        const cell = cellByNumber.get(n);
+        if (cell) cell.classList.remove("called");
+      }
+
+      latestNumberEl.textContent = "—";
+      latestSubEl.textContent = "Press Next to start";
+      renderHistory([]);
+      pillEl.textContent = "0 / 75 called";
+      nextBtn.disabled = false;
+
+      // Stop any ongoing speech
+      if (window.speechSynthesis) window.speechSynthesis.cancel();
+    }
+
+    function updateCounts(){
+      pillEl.textContent = `${called.size} / 75 called`;
+    }
+
+    function pickRandomRemaining(){
+      const idx = Math.floor(Math.random() * remaining.length);
+      const n = remaining[idx];
+      // remove it from remaining in O(1)
+      remaining[idx] = remaining[remaining.length - 1];
+      remaining.pop();
+      return n;
+    }
+
+    function callNext(){
+      if (remaining.length === 0){
+        nextBtn.disabled = true;
+        latestNumberEl.textContent = "DONE";
+        latestSubEl.textContent = "All numbers called";
+        return;
+      }
+
+      const n = pickRandomRemaining();
+      called.add(n);
+
+      const letter = letterForNumber(n);
+      const label = `${letter}-${n}`;
+
+      // Latest
+      latestNumberEl.textContent = label;
+      latestSubEl.textContent = `${jpLetter[letter]}、${japaneseNumber(n)}  •  ${letter} ${n}`;
+
+      // History (previous 5, excluding current)
+      historyLabels.unshift(label);
+      const previousFive = historyLabels.slice(1, 6);
+      renderHistory(previousFive);
+
+      // Highlight
+      const cell = cellByNumber.get(n);
+      if (cell) cell.classList.add("called");
+
+      // Speak JP then EN
+      speakBilingual(letter, n);
+
+      updateCounts();
+
+      if (remaining.length === 0) nextBtn.disabled = true;
+    }
+
+    // voices load async in some browsers
+    if (window.speechSynthesis){
+      window.speechSynthesis.onvoiceschanged = () => {};
+    }
+
+    // Init
+    startNewGame();
+
+    nextBtn.addEventListener("click", callNext);
+
+    resetBtn.addEventListener("click", () => {
+      const ok = confirm("Reset the game and clear all called numbers?");
+      if (ok) startNewGame();
+    });
+
+    // Spacebar = Next (nice for hosting)
+    window.addEventListener("keydown", (e) => {
+      if (e.code === "Space"){
+        e.preventDefault();
+        if (!nextBtn.disabled) callNext();
+      }
+    });
+  </script>
+</body>
+</html>
