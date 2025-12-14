@@ -7,37 +7,38 @@
 
   <style>
     :root{
-      /* Pretty purple background */
-      --bgA:#2b0b6d;
-      --bgB:#4a1fb8;
-      --bgC:#6a2ff0;
-      --bgD:#a13bff;
+      /* Purple + pretty */
+      --bg0:#120523;
+      --bg1:#2a0f5a;
+      --bg2:#5a1ea8;
 
       --glass: rgba(255,255,255,.07);
       --glass2: rgba(255,255,255,.04);
       --stroke: rgba(255,255,255,.14);
       --stroke2: rgba(255,255,255,.10);
-      --text: rgba(255,255,255,.94);
-      --muted: rgba(255,255,255,.70);
+      --text: rgba(255,255,255,.93);
+      --muted: rgba(255,255,255,.68);
 
-      --accentMint:#00ffd1;
-      --accentPink:#ff61d7;
-      --accentBlue:#2a7cff;
+      --accentA:#ff7ad9; /* pink */
+      --accentB:#8f6bff; /* purple */
+      --accentC:#43d6ff; /* sky */
 
-      --calledBg: rgba(255,97,215,.92); /* bright pink highlight */
-      --calledText: #2b0730;
+      --calledBg: rgba(255,122,217,.92);
+      --calledText: #2b0630;
 
-      --shadowSoft: 0 10px 28px rgba(0,0,0,.22);
+      --shadowSoft: 0 10px 26px rgba(0,0,0,.28);
       --radiusXL: 26px;
 
-      /* TV-friendly, tighter spacing */
+      /* Tight layout (TV-safe) */
       --pagePad: 10px;
       --gap: 10px;
       --pad: 12px;
 
-      /* Grid tight but readable */
-      --gridPad: 8px;
-      --gridGap: 6px;
+      --gridPad: 8px;     /* smaller padding so grid uses space */
+      --gridGap: 6px;     /* smaller gaps */
+
+      /* EXTRA bottom safe margin for overscan */
+      --safeBottom: 48px;
     }
 
     *{ box-sizing: border-box; }
@@ -48,13 +49,13 @@
       color: var(--text);
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
       background:
-        radial-gradient(1100px 780px at 18% 18%, rgba(255,97,215,.25), transparent 60%),
-        radial-gradient(1000px 700px at 85% 20%, rgba(0,255,209,.18), transparent 55%),
-        radial-gradient(1200px 900px at 55% 85%, rgba(42,124,255,.22), transparent 60%),
-        linear-gradient(135deg, var(--bgA), var(--bgB) 35%, var(--bgC) 70%, var(--bgD));
+        radial-gradient(1100px 700px at 20% 25%, rgba(255,122,217,.22), transparent 60%),
+        radial-gradient(1000px 700px at 75% 35%, rgba(67,214,255,.18), transparent 55%),
+        radial-gradient(1200px 900px at 55% 90%, rgba(143,107,255,.22), transparent 62%),
+        linear-gradient(180deg, var(--bg2), var(--bg0));
     }
 
-    /* sparkly texture */
+    /* glitter */
     body::before{
       content:"";
       position:fixed;
@@ -62,12 +63,12 @@
       pointer-events:none;
       opacity:.22;
       background:
-        radial-gradient(circle at 10% 20%, rgba(255,255,255,.22) 0 1px, transparent 2px),
-        radial-gradient(circle at 30% 40%, rgba(255,255,255,.16) 0 1px, transparent 2px),
-        radial-gradient(circle at 70% 25%, rgba(255,255,255,.20) 0 1px, transparent 2px),
-        radial-gradient(circle at 90% 55%, rgba(255,255,255,.14) 0 1px, transparent 2px),
-        radial-gradient(circle at 40% 85%, rgba(255,255,255,.18) 0 1px, transparent 2px),
-        radial-gradient(circle at 75% 80%, rgba(255,255,255,.16) 0 1px, transparent 2px);
+        radial-gradient(circle at 12% 18%, rgba(255,255,255,.22) 0 1px, transparent 2px),
+        radial-gradient(circle at 38% 30%, rgba(255,255,255,.16) 0 1px, transparent 2px),
+        radial-gradient(circle at 62% 22%, rgba(255,255,255,.18) 0 1px, transparent 2px),
+        radial-gradient(circle at 85% 34%, rgba(255,255,255,.16) 0 1px, transparent 2px),
+        radial-gradient(circle at 22% 78%, rgba(255,255,255,.12) 0 1px, transparent 2px),
+        radial-gradient(circle at 70% 72%, rgba(255,255,255,.13) 0 1px, transparent 2px);
       background-size: 420px 420px;
       filter: blur(.2px);
     }
@@ -76,6 +77,7 @@
       height:100vh;
       display:flex;
       padding: var(--pagePad);
+      padding-bottom: calc(var(--pagePad) + var(--safeBottom)); /* <<< overscan safe */
       gap: var(--gap);
     }
 
@@ -97,17 +99,16 @@
       overflow:hidden;
       position: relative;
     }
-
     .panel::after{
       content:"";
       position:absolute;
       inset:0;
       border-radius: var(--radiusXL);
       pointer-events:none;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.14);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.12);
     }
 
-    /* Top bar */
+    /* Top bar: bigger title, buttons top-right */
     .topBar{
       display:flex;
       align-items:center;
@@ -119,14 +120,14 @@
     .partyTitle{
       font-weight: 1000;
       letter-spacing: .01em;
-      font-size: clamp(18px, 2.6vw, 28px); /* bigger title */
-      line-height: 1.05;
+      font-size: clamp(18px, 2.6vw, 28px);
+      line-height: 1.2;
       user-select:none;
       white-space: nowrap;
       overflow:hidden;
       text-overflow: ellipsis;
-      max-width: 56%;
-      text-shadow: 0 10px 28px rgba(0,0,0,.28);
+      max-width: 58%;
+      text-shadow: 0 12px 30px rgba(0,0,0,.35);
     }
 
     .btnRow{
@@ -150,14 +151,14 @@
       overflow:hidden;
       transform: translateZ(0);
       line-height: 1;
-      box-shadow: 0 14px 30px rgba(0,0,0,.16);
+      box-shadow: 0 14px 28px rgba(0,0,0,.18);
     }
 
     .btn::after{
       content:"";
       position:absolute;
       inset:-2px;
-      background: radial-gradient(600px 180px at 20% 0%, rgba(255,255,255,.28), transparent 55%);
+      background: radial-gradient(600px 180px at 20% 0%, rgba(255,255,255,.25), transparent 55%);
       opacity:.55;
       transform: translateY(-22px);
       transition: transform .18s ease;
@@ -169,33 +170,26 @@
 
     .nextBtn{
       background:
-        radial-gradient(120% 140% at 20% 10%, rgba(255,255,255,.20), transparent 45%),
-        linear-gradient(135deg, var(--accentBlue), #8a4bff);
+        radial-gradient(120% 140% at 20% 10%, rgba(255,255,255,.18), transparent 45%),
+        linear-gradient(135deg, var(--accentC), var(--accentB));
     }
     .resetBtn{
       background:
-        radial-gradient(120% 140% at 20% 10%, rgba(255,255,255,.16), transparent 45%),
+        radial-gradient(120% 140% at 20% 10%, rgba(255,255,255,.14), transparent 45%),
         linear-gradient(135deg, rgba(255,255,255,.18), rgba(255,255,255,.06));
-      border: 1px solid rgba(255,255,255,.18);
+      border: 1px solid rgba(255,255,255,.16);
     }
     .bingoBtn{
       background:
-        radial-gradient(120% 140% at 20% 10%, rgba(255,255,255,.22), transparent 45%),
-        linear-gradient(135deg, var(--accentMint), var(--accentPink));
-      color: #1b0430;
+        radial-gradient(120% 140% at 20% 10%, rgba(255,255,255,.20), transparent 45%),
+        linear-gradient(135deg, rgba(255,122,217,.98), rgba(143,107,255,.75));
     }
 
     /* LEFT */
-    .latestPanel{
-      flex: 1;
-      min-height:0;
-      display:flex;
-      flex-direction:column;
-    }
+    .latestPanel{ flex: 1; min-height:0; display:flex; flex-direction:column; }
 
     .latestBody{
-      flex:1;
-      min-height:0;
+      flex:1; min-height:0;
       padding: var(--pad);
       display:flex;
     }
@@ -205,14 +199,15 @@
       border-radius: 20px;
       border: 1px solid var(--stroke2);
       background:
-        radial-gradient(1200px 700px at 30% 20%, rgba(255,97,215,.16), transparent 55%),
-        radial-gradient(900px 650px at 70% 80%, rgba(0,255,209,.12), transparent 60%),
+        radial-gradient(1200px 700px at 25% 15%, rgba(255,122,217,.18), transparent 58%),
+        radial-gradient(900px 650px at 70% 80%, rgba(67,214,255,.14), transparent 60%),
         linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
       display:flex;
       align-items:center;
       justify-content:center;
       text-align:center;
       padding: 10px;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.05);
       user-select:none;
     }
 
@@ -220,16 +215,16 @@
       font-weight: 1000;
       letter-spacing: .01em;
       line-height: .95;
-      font-size: clamp(76px, 13vw, 230px); /* big */
-      text-shadow: 0 20px 55px rgba(0,0,0,.38);
+      font-size: clamp(78px, 13vw, 240px);
+      text-shadow: 0 18px 45px rgba(0,0,0,.40);
     }
 
     .latestSub{
-      margin-top: 8px;
+      margin-top: 10px;
       font-weight: 800;
-      color: rgba(255,255,255,.78);
+      color: var(--muted);
       letter-spacing: .02em;
-      font-size: clamp(12px, 1.7vw, 18px);
+      font-size: clamp(12px, 1.8vw, 18px);
       line-height: 1.25;
     }
 
@@ -246,24 +241,24 @@
     }
 
     .title{
-      font-weight: 900;
+      font-weight: 950;
       letter-spacing: .12em;
       text-transform: uppercase;
       font-size: 11px;
-      color: rgba(255,255,255,.78);
+      color: rgba(255,255,255,.75);
       user-select:none;
     }
 
     .pill{
       font-weight: 900;
       font-size: 11px;
-      color: rgba(255,255,255,.86);
-      border: 1px solid rgba(255,255,255,.16);
+      color: rgba(255,255,255,.82);
+      border: 1px solid var(--stroke2);
       padding: 6px 10px;
       border-radius: 999px;
-      background: rgba(255,255,255,.04);
-      white-space: nowrap;
+      background: rgba(255,255,255,.03);
       user-select:none;
+      white-space: nowrap;
     }
 
     .historyRow{
@@ -274,20 +269,21 @@
 
     .histItem{
       border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.04);
-      padding: 10px 6px;
+      border: 1px solid var(--stroke2);
+      background: rgba(255,255,255,.03);
+      padding: 10px 8px;
       display:flex;
       align-items:center;
       justify-content:center;
       font-weight: 1000;
-      font-size: clamp(16px, 2.2vw, 28px); /* bigger */
-      min-height: 46px;
+      font-size: clamp(16px, 2.3vw, 28px);
+      min-height: 44px;
       user-select:none;
     }
-    .histItem.empty{ color: rgba(255,255,255,.25); font-weight: 850; }
 
-    /* RIGHT: grid fills space more */
+    .histItem.empty{ color: rgba(255,255,255,.22); font-weight: 850; }
+
+    /* RIGHT - tighter padding, bigger numbers, smaller gaps */
     .gridPanel{
       flex: 1;
       min-height: 0;
@@ -308,12 +304,13 @@
     .cell{
       border-radius: 14px;
       border: 1px solid rgba(255,255,255,.12);
-      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.015));
+      background: linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.015));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
       display:flex;
       align-items:center;
       justify-content:center;
       font-weight: 1000;
-      font-size: clamp(14px, 2.1vw, 24px); /* bigger numbers */
+      font-size: clamp(14px, 2.4vw, 26px);
       color: rgba(255,255,255,.90);
       user-select:none;
       transition: transform .12s ease, background .12s ease, box-shadow .12s ease;
@@ -321,71 +318,59 @@
 
     .cell.called{
       background:
-        radial-gradient(900px 500px at 40% 20%, rgba(255,255,255,.22), transparent 60%),
+        radial-gradient(800px 400px at 40% 20%, rgba(255,255,255,.22), transparent 65%),
         var(--calledBg);
       color: var(--calledText);
-      box-shadow: 0 16px 34px rgba(255,97,215,.25);
+      box-shadow: 0 16px 30px rgba(255,122,217,.18);
       transform: translateY(-1px);
     }
 
-    /* Celebration overlay */
-    #confetti{
+    /* Celebration overlays */
+    #fxCanvas{
       position: fixed;
       inset: 0;
       pointer-events: none;
       z-index: 999;
     }
 
-    .celebrateOverlay{
+    .bingoOverlay{
       position: fixed;
       inset: 0;
-      display:none;
+      pointer-events: none;
+      z-index: 1000;
+      display:flex;
       align-items:center;
       justify-content:center;
-      z-index: 1000;
-      pointer-events:none;
+      opacity: 0;
+      transform: scale(0.98);
+      transition: opacity .20s ease, transform .20s ease;
       background:
-        radial-gradient(700px 400px at 50% 40%, rgba(255,255,255,.18), transparent 62%),
-        radial-gradient(1000px 700px at 50% 60%, rgba(255,97,215,.18), transparent 60%),
-        radial-gradient(900px 600px at 30% 30%, rgba(0,255,209,.14), transparent 60%),
-        rgba(10, 0, 30, 0.35);
-      backdrop-filter: blur(2px);
+        radial-gradient(900px 600px at 50% 45%, rgba(255,255,255,.08), transparent 65%),
+        radial-gradient(1200px 900px at 50% 50%, rgba(255,122,217,.20), transparent 62%),
+        radial-gradient(1200px 900px at 50% 55%, rgba(143,107,255,.22), transparent 62%);
+      backdrop-filter: blur(3px);
+      -webkit-backdrop-filter: blur(3px);
     }
 
-    .celebrateCard{
-      padding: 26px 30px;
+    .bingoOverlay.show{
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .bingoText{
+      font-weight: 1100;
+      font-size: clamp(64px, 10vw, 160px);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      text-shadow:
+        0 24px 60px rgba(0,0,0,.45),
+        0 0 30px rgba(255,122,217,.35);
+      color: rgba(255,255,255,.95);
+      padding: 18px 26px;
       border-radius: 28px;
       border: 1px solid rgba(255,255,255,.18);
-      background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.05));
-      box-shadow: 0 26px 80px rgba(0,0,0,.40);
-      text-align:center;
-      transform: scale(.98);
-      animation: popIn 520ms cubic-bezier(.2,.9,.2,1) forwards;
-    }
-
-    .celebrateBig{
-      font-size: clamp(54px, 7vw, 110px);
-      font-weight: 1100;
-      letter-spacing: .02em;
-      line-height: 1;
-      text-shadow: 0 22px 70px rgba(0,0,0,.45);
-      background: linear-gradient(90deg, var(--accentMint), var(--accentPink), #ffd36a);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-    }
-
-    .celebrateSub{
-      margin-top: 10px;
-      font-weight: 850;
-      font-size: clamp(14px, 2vw, 22px);
-      color: rgba(255,255,255,.88);
-      letter-spacing: .02em;
-    }
-
-    @keyframes popIn{
-      0% { transform: scale(.92); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
+      background: linear-gradient(135deg, rgba(255,122,217,.22), rgba(67,214,255,.14));
+      box-shadow: 0 24px 70px rgba(0,0,0,.35);
     }
 
     @media (orientation: portrait){
@@ -397,17 +382,12 @@
 </head>
 
 <body>
-  <canvas id="confetti"></canvas>
-
-  <div class="celebrateOverlay" id="celebrateOverlay">
-    <div class="celebrateCard">
-      <div class="celebrateBig">BINGO!</div>
-      <div class="celebrateSub">🎉 Azuki’s Birthday Win! 🎉</div>
-    </div>
+  <canvas id="fxCanvas"></canvas>
+  <div class="bingoOverlay" id="bingoOverlay">
+    <div class="bingoText">BINGO!</div>
   </div>
 
   <div class="app">
-
     <!-- LEFT -->
     <section class="col">
       <div class="panel latestPanel">
@@ -445,11 +425,11 @@
         <div class="grid" id="grid"></div>
       </div>
     </section>
-
   </div>
 
   <script>
-    // ---------------- Japanese number reading ----------------
+    // ---------- Japanese number reading (more natural TTS) ----------
+    // Adds a slight pause between tens and ones (e.g., "にじゅう いち") which many TTS engines read more naturally.
     function japaneseNumber(n){
       const ones = ["", "いち", "に", "さん", "よん", "ご", "ろく", "なな", "はち", "きゅう"];
       if (n === 0) return "ゼロ";
@@ -470,84 +450,83 @@
         (tens === 8) ? "はちじゅう" :
         (tens === 9) ? "きゅうじゅう" : "";
 
-      return unit === 0 ? tensRead : (tensRead + ones[unit]);
+      if (unit === 0) return tensRead;
+
+      // the key change: add a small pause
+      return tensRead + " " + ones[unit];
     }
 
-    // ---------------- Cute voice selection ----------------
-    function pickCuteVoice(langPrefix){
-      const voices = window.speechSynthesis?.getVoices?.() || [];
-      const prefix = langPrefix.toLowerCase();
+    // ---------- “Cute voice” selection (best effort) ----------
+    const CUTE_HINTS_EN = ["Samantha","Victoria","Karen","Moira","Tessa","Fiona","Ava","Serena","Google US English"];
+    const CUTE_HINTS_JA = ["Kyoko","O-Ren","Google 日本語","Google Japanese","Mizuki","Haruka","Hina","Yui"];
 
-      // Keywords that often correlate with friendlier/female-ish voices (varies by OS/browser)
-      const cuteHints = [
-        "female","woman","girl","samantha","victoria","zoe","serena","karen",
-        "siri","enhanced",
-        "nanami","mizuki","haruka","hinata","yuna","kyoko","ayumi"
-      ];
+    function getVoices(){
+      return window.speechSynthesis?.getVoices?.() || [];
+    }
 
-      const candidates = voices.filter(v => (v.lang || "").toLowerCase().startsWith(prefix));
-      if (!candidates.length) return null;
+    function pickCuteVoice(langPrefix, hints){
+      const voices = getVoices();
+      const candidates = voices.filter(v => (v.lang || "").toLowerCase().startsWith(langPrefix));
 
-      // Prefer local voices first
-      const local = candidates.filter(v => v.localService);
-
-      function score(v){
-        const name = (v.name || "").toLowerCase();
-        let s = 0;
-        if (v.localService) s += 3;
-        if (cuteHints.some(k => name.includes(k))) s += 5;
-        // Some Google voices are pleasant too
-        if (name.includes("google")) s += 1;
-        return s;
+      for (const hint of hints){
+        const m = candidates.find(v => (v.name || "").toLowerCase().includes(hint.toLowerCase()));
+        if (m) return m;
       }
 
-      const pool = local.length ? local : candidates;
-      pool.sort((a,b) => score(b) - score(a));
-      return pool[0] || null;
+      const local = candidates.find(v => v.localService);
+      if (local) return local;
+
+      return candidates[0] || null;
     }
 
-    function speakCuteBilingualNumber(n){
+    function speakCuteJPThenEN_Number(n){
       const synth = window.speechSynthesis;
       if (!synth || !window.SpeechSynthesisUtterance) return;
 
       synth.cancel();
 
+      const jpVoice = pickCuteVoice("ja", CUTE_HINTS_JA);
+      const enVoice = pickCuteVoice("en", CUTE_HINTS_EN);
+
       const jp = new SpeechSynthesisUtterance(japaneseNumber(n));
       jp.lang = "ja-JP";
-      const jpV = pickCuteVoice("ja");
-      if (jpV) jp.voice = jpV;
-      jp.rate = 1.02;
-      jp.pitch = 1.35;   // cuter / higher
-      jp.volume = 1.0;
+      if (jpVoice) jp.voice = jpVoice;
+      jp.rate = 0.98;
+      jp.pitch = 1.20;
 
       const en = new SpeechSynthesisUtterance(String(n));
       en.lang = "en-US";
-      const enV = pickCuteVoice("en");
-      if (enV) en.voice = enV;
-      en.rate = 1.02;
-      en.pitch = 1.28;
-      en.volume = 1.0;
+      if (enVoice) en.voice = enVoice;
+      en.rate = 0.98;
+      en.pitch = 1.15;
 
       jp.onend = () => synth.speak(en);
       synth.speak(jp);
     }
 
-    function speakCuteBingo(){
-      const synth = window.speechSynthesis;
-      if (!synth || !window.SpeechSynthesisUtterance) return;
-
-      synth.cancel();
-      const u = new SpeechSynthesisUtterance("Bingo!");
-      u.lang = "en-US";
-      const v = pickCuteVoice("en");
-      if (v) u.voice = v;
-      u.rate = 1.05;
-      u.pitch = 1.45; // extra cute for Bingo
-      u.volume = 1.0;
-      synth.speak(u);
+    // Ensure voices load in some browsers
+    if (window.speechSynthesis){
+      window.speechSynthesis.onvoiceschanged = () => {};
     }
 
-    // ---------------- UI refs ----------------
+    // ---------- Real Bingo sound file ----------
+    // Put your file at: assets/bingo.mp3
+    const bingoAudio = new Audio("bingo.mp3");
+    bingoAudio.preload = "auto";
+
+    async function playBingoAudio(){
+      try{
+        bingoAudio.pause();
+        bingoAudio.currentTime = 0;
+        await bingoAudio.play();
+      } catch (e) {
+        // If blocked, at least the overlay/confetti still works.
+        // Usually resolves after the user has clicked once.
+        console.warn("Bingo audio play blocked:", e);
+      }
+    }
+
+    // ---------- UI refs ----------
     const gridEl = document.getElementById("grid");
     const historyRowEl = document.getElementById("historyRow");
     const latestNumberEl = document.getElementById("latestNumber");
@@ -556,19 +535,18 @@
     const nextBtn = document.getElementById("nextBtn");
     const resetBtn = document.getElementById("resetBtn");
     const bingoBtn = document.getElementById("bingoBtn");
+    const bingoOverlay = document.getElementById("bingoOverlay");
 
-    const overlay = document.getElementById("celebrateOverlay");
-
-    // Build standard bingo grid layout by columns (1–15, 16–30, ...)
+    // Build grid 5 cols x 15 rows (standard bingo layout)
     const cellByNumber = new Map();
     for (let r = 0; r < 15; r++){
       for (let c = 0; c < 5; c++){
-        const num = r + 1 + c * 15;
+        const n = r + 1 + c * 15;
         const cell = document.createElement("div");
         cell.className = "cell";
-        cell.textContent = num;
+        cell.textContent = n;
         gridEl.appendChild(cell);
-        cellByNumber.set(num, cell);
+        cellByNumber.set(n, cell);
       }
     }
 
@@ -583,7 +561,7 @@
       }
     }
 
-    // ---------------- Game state ----------------
+    // ---------- Game state (random unique numbers) ----------
     let remaining = [];
     let called = new Set();
     let historyNums = []; // latest-first
@@ -604,7 +582,6 @@
       pillEl.textContent = "0 / 75 called";
       nextBtn.disabled = false;
 
-      overlay.style.display = "none";
       if (window.speechSynthesis) window.speechSynthesis.cancel();
     }
 
@@ -641,14 +618,16 @@
       const cell = cellByNumber.get(n);
       if (cell) cell.classList.add("called");
 
-      speakCuteBilingualNumber(n);
+      // Speak number (JP then EN)
+      speakCuteJPThenEN_Number(n);
+
       updateCounts();
 
       if (remaining.length === 0) nextBtn.disabled = true;
     }
 
-    // ---------------- Fancy celebration ----------------
-    const canvas = document.getElementById("confetti");
+    // ---------- Celebration (fancy fullscreen confetti) ----------
+    const canvas = document.getElementById("fxCanvas");
     const ctx = canvas.getContext("2d", { alpha: true });
 
     function resizeCanvas(){
@@ -661,50 +640,31 @@
     window.addEventListener("resize", resizeCanvas);
     resizeCanvas();
 
-    function rand(a,b){ return a + Math.random()*(b-a); }
+    function rand(a,b){ return a + Math.random() * (b-a); }
 
-    function fancyBurst(){
+    function confettiBurst(){
       const W = window.innerWidth;
       const H = window.innerHeight;
 
-      const particles = [];
-      const bursts = 3;
-      const colors = [
-        {h: 310, s: 95, l: 62}, // pink
-        {h: 185, s: 95, l: 55}, // mint
-        {h: 260, s: 95, l: 65}, // purple
-        {h: 45,  s: 95, l: 62}, // gold
-      ];
+      const pieces = [];
+      const count = 240;
 
-      for (let b=0; b<bursts; b++){
-        const cx = W * rand(0.25, 0.75);
-        const cy = H * rand(0.20, 0.50);
-        const count = 190;
-
-        for (let i=0; i<count; i++){
-          const c = colors[Math.floor(rand(0, colors.length))];
-          const ang = rand(0, Math.PI*2);
-          const spd = rand(2.0, 9.5);
-          particles.push({
-            x: cx,
-            y: cy,
-            vx: Math.cos(ang)*spd,
-            vy: Math.sin(ang)*spd - rand(2, 6),
-            g: rand(0.08, 0.20),
-            size: rand(3, 7),
-            rot: rand(0, Math.PI),
-            vr: rand(-0.25, 0.25),
-            life: rand(70, 140),
-            type: Math.random() < 0.25 ? "star" : "rect",
-            c
-          });
-        }
-      }
-
-      // Sparkle rings
-      const rings = [];
-      for (let i=0; i<3; i++){
-        rings.push({ t:0, x: W*0.5, y: H*0.42 + i*15, r: 30 + i*12 });
+      for (let i=0; i<count; i++){
+        pieces.push({
+          x: rand(W*0.2, W*0.8),
+          y: rand(H*0.15, H*0.45),
+          vx: rand(-5.4, 5.4),
+          vy: rand(-12.0, -3.0),
+          g: rand(0.20, 0.36),
+          w: rand(4, 8),
+          h: rand(3, 6),
+          rot: rand(0, Math.PI),
+          vr: rand(-0.35, 0.35),
+          life: rand(70, 120),
+          hue: rand(270, 340), // purple → pink range
+          sat: rand(85, 100),
+          lum: rand(55, 70)
+        });
       }
 
       let frame = 0;
@@ -712,60 +672,26 @@
         frame++;
         ctx.clearRect(0,0,W,H);
 
-        // rings
-        for (const r of rings){
-          r.t += 1;
-          const rr = r.r + r.t*3.2;
-          const alpha = Math.max(0, 0.22 - r.t*0.004);
-          ctx.beginPath();
-          ctx.arc(r.x, r.y, rr, 0, Math.PI*2);
-          ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
-          ctx.lineWidth = 2;
-          ctx.stroke();
-        }
-
-        for (const p of particles){
+        for (const p of pieces){
           p.vy += p.g;
           p.x += p.vx;
           p.y += p.vy;
           p.rot += p.vr;
           p.life -= 1;
 
-          const a = Math.max(0, Math.min(1, p.life / 120));
-          const {h,s,l} = p.c;
-
           ctx.save();
           ctx.translate(p.x, p.y);
           ctx.rotate(p.rot);
-
-          if (p.type === "star"){
-            ctx.fillStyle = `hsla(${h},${s}%,${l}%,${0.95*a})`;
-            // simple 5-point star
-            ctx.beginPath();
-            const spikes = 5, outer = p.size*1.2, inner = p.size*0.55;
-            let rot = Math.PI / 2 * 3;
-            let x = 0, y = 0;
-            ctx.moveTo(0, -outer);
-            for (let i = 0; i < spikes; i++){
-              x = Math.cos(rot) * outer; y = Math.sin(rot) * outer; ctx.lineTo(x, y); rot += Math.PI / spikes;
-              x = Math.cos(rot) * inner; y = Math.sin(rot) * inner; ctx.lineTo(x, y); rot += Math.PI / spikes;
-            }
-            ctx.closePath();
-            ctx.fill();
-          } else {
-            ctx.fillStyle = `hsla(${h},${s}%,${l}%,${0.95*a})`;
-            ctx.fillRect(-p.size, -p.size*0.7, p.size*2, p.size*1.4);
-          }
-
+          ctx.fillStyle = `hsla(${p.hue}, ${p.sat}%, ${p.lum}%, 0.95)`;
+          ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
           ctx.restore();
         }
 
-        // cull
-        for (let i=particles.length-1; i>=0; i--){
-          if (particles[i].life <= 0 || particles[i].y > H + 80) particles.splice(i,1);
+        for (let i=pieces.length-1; i>=0; i--){
+          if (pieces[i].life <= 0 || pieces[i].y > H + 80) pieces.splice(i,1);
         }
 
-        if (particles.length > 0 && frame < 200){
+        if (pieces.length > 0 && frame < 160){
           requestAnimationFrame(tick);
         } else {
           ctx.clearRect(0,0,W,H);
@@ -774,18 +700,14 @@
       requestAnimationFrame(tick);
     }
 
-    function celebrate(){
-      overlay.style.display = "flex";
-      fancyBurst();
-      speakCuteBingo();
+    async function celebrate(){
+      // Visual + overlay
+      confettiBurst();
+      bingoOverlay.classList.add("show");
+      setTimeout(() => bingoOverlay.classList.remove("show"), 900);
 
-      // auto-hide overlay after a moment
-      setTimeout(() => { overlay.style.display = "none"; }, 1800);
-    }
-
-    // voices load async
-    if (window.speechSynthesis){
-      window.speechSynthesis.onvoiceschanged = () => {};
+      // Real voice file
+      await playBingoAudio();
     }
 
     // Init
@@ -800,7 +722,7 @@
 
     bingoBtn.addEventListener("click", celebrate);
 
-    // Keyboard: Space = Next, B = Bingo
+    // Spacebar = Next, B = Bingo
     window.addEventListener("keydown", (e) => {
       if (e.code === "Space"){
         e.preventDefault();
@@ -812,3 +734,4 @@
   </script>
 </body>
 </html>
+
