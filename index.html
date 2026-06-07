@@ -695,8 +695,8 @@
       latestNumberEl.textContent = String(n);
       latestSubEl.textContent = `${japaneseNumber(n)}  •  ${n}`;
 
-      // Set back-face image (1–44 cycling)
-      latestImageEl.src = `public/aki/${((n - 1) % 44) + 1}.jpg`;
+      // Set back-face image (1–64 cycling)
+      latestImageEl.src = `public/aki/${((n - 1) % 64) + 1}.jpg`;
 
       historyNums.unshift(n);
       const previousFive = historyNums.slice(0, 5).map(String);
