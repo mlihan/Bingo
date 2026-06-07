@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Azuki's Birthday Party</title>
+  <title>Aki's Birthday Party</title>
 
   <style>
     :root{
@@ -196,19 +196,59 @@
 
     .latestBox{
       flex:1;
+      perspective: 1400px;
+      user-select:none;
+      display: flex;
+    }
+
+    .flipCardInner{
+      flex:1;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.65s cubic-bezier(0.4, 0, 0.2, 1);
       border-radius: 20px;
+    }
+
+    .flipCardInner.flipped{
+      transform: rotateY(180deg);
+    }
+
+    .flipCardFront,
+    .flipCardBack{
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .flipCardFront{
       border: 1px solid var(--stroke2);
       background:
         radial-gradient(1200px 700px at 25% 15%, rgba(255,122,217,.18), transparent 58%),
         radial-gradient(900px 650px at 70% 80%, rgba(67,214,255,.14), transparent 60%),
         linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      text-align:center;
       padding: 10px;
       box-shadow: inset 0 0 0 1px rgba(255,255,255,.05);
-      user-select:none;
+    }
+
+    .flipCardBack{
+      transform: rotateY(180deg);
+      overflow: hidden;
+      border: 1px solid var(--stroke2);
+      background: #000;
+    }
+
+    .flipCardBack img{
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 20px;
+      display: block;
     }
 
     .latestNumber{
@@ -283,6 +323,16 @@
 
     .histItem.empty{ color: rgba(255,255,255,.22); font-weight: 850; }
 
+    .histItem.latest{
+      background:
+        radial-gradient(800px 400px at 40% 20%, rgba(255,255,255,.22), transparent 65%),
+        var(--calledBg);
+      color: var(--calledText);
+      box-shadow: 0 10px 24px rgba(255,122,217,.28);
+      transform: scale(1.08);
+      border-color: rgba(255,122,217,.55);
+    }
+
     /* RIGHT - tighter padding, bigger numbers, smaller gaps */
     .gridPanel{
       flex: 1;
@@ -330,7 +380,7 @@
       position: fixed;
       inset: 0;
       pointer-events: none;
-      z-index: 999;
+      z-index: 1002;
     }
 
     .bingoOverlay{
@@ -373,6 +423,29 @@
       box-shadow: 0 24px 70px rgba(0,0,0,.35);
     }
 
+    .bingoVideoOverlay{
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: #000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease;
+      cursor: pointer;
+    }
+
+    .bingoVideoOverlay.show{
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .bingoVideoOverlay video{
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
     @media (orientation: portrait){
       .app{ flex-direction:column; }
       .col{ width:100%; height:50%; }
@@ -387,12 +460,16 @@
     <div class="bingoText">BINGO!</div>
   </div>
 
+  <div class="bingoVideoOverlay" id="bingoVideoOverlay">
+    <video id="bingoVideo" src="public/aki/aki_bingo.mp4" playsinline></video>
+  </div>
+
   <div class="app">
     <!-- LEFT -->
     <section class="col">
       <div class="panel latestPanel">
         <div class="topBar">
-          <div class="partyTitle">Azuki's Birthday Party</div>
+          <div class="partyTitle">Aki's Birthday Party</div>
           <div class="btnRow">
             <button class="btn bingoBtn" id="bingoBtn" title="Celebrate!">Bingo!</button>
             <button class="btn resetBtn" id="resetBtn" title="Clear and start over">Reset</button>
@@ -402,9 +479,16 @@
 
         <div class="latestBody">
           <div class="latestBox">
-            <div>
-              <div class="latestNumber" id="latestNumber">—</div>
-              <div class="latestSub" id="latestSub">Press Next to start</div>
+            <div class="flipCardInner" id="flipCardInner">
+              <div class="flipCardFront">
+                <div>
+                  <div class="latestNumber" id="latestNumber">—</div>
+                  <div class="latestSub" id="latestSub">Press Next to start</div>
+                </div>
+              </div>
+              <div class="flipCardBack">
+                <img id="latestImage" src="" alt="" />
+              </div>
             </div>
           </div>
         </div>
@@ -509,23 +593,6 @@
       window.speechSynthesis.onvoiceschanged = () => {};
     }
 
-    // ---------- Real Bingo sound file ----------
-    // Put your file at: assets/bingo.mp3
-    const bingoAudio = new Audio("bingo.mp3");
-    bingoAudio.preload = "auto";
-
-    async function playBingoAudio(){
-      try{
-        bingoAudio.pause();
-        bingoAudio.currentTime = 0;
-        await bingoAudio.play();
-      } catch (e) {
-        // If blocked, at least the overlay/confetti still works.
-        // Usually resolves after the user has clicked once.
-        console.warn("Bingo audio play blocked:", e);
-      }
-    }
-
     // ---------- UI refs ----------
     const gridEl = document.getElementById("grid");
     const historyRowEl = document.getElementById("historyRow");
@@ -536,6 +603,10 @@
     const resetBtn = document.getElementById("resetBtn");
     const bingoBtn = document.getElementById("bingoBtn");
     const bingoOverlay = document.getElementById("bingoOverlay");
+    const flipCardInner = document.getElementById("flipCardInner");
+    const latestImageEl = document.getElementById("latestImage");
+    const bingoVideoOverlay = document.getElementById("bingoVideoOverlay");
+    const bingoVideoEl = document.getElementById("bingoVideo");
 
     // Build grid 5 cols x 15 rows (standard bingo layout)
     const cellByNumber = new Map();
@@ -555,7 +626,7 @@
       const items = history.slice(0, 5);
       for (let i = 0; i < 5; i++){
         const div = document.createElement("div");
-        div.className = "histItem" + (items[i] ? "" : " empty");
+        div.className = "histItem" + (items[i] ? "" : " empty") + (i === 0 && items[i] ? " latest" : "");
         div.textContent = items[i] ? items[i] : "—";
         historyRowEl.appendChild(div);
       }
@@ -575,6 +646,12 @@
         const cell = cellByNumber.get(n);
         if (cell) cell.classList.remove("called");
       }
+
+      // Reset flip card to front face
+      flipCardInner.style.transition = "none";
+      flipCardInner.classList.remove("flipped");
+      flipCardInner.offsetHeight; // force reflow
+      flipCardInner.style.transition = "";
 
       latestNumberEl.textContent = "—";
       latestSubEl.textContent = "Press Next to start";
@@ -608,11 +685,21 @@
       const n = pickRandomRemaining();
       called.add(n);
 
+      // Snap card back to front instantly
+      flipCardInner.style.transition = "none";
+      flipCardInner.classList.remove("flipped");
+      flipCardInner.offsetHeight; // force reflow
+      flipCardInner.style.transition = "";
+
+      // Update front content
       latestNumberEl.textContent = String(n);
       latestSubEl.textContent = `${japaneseNumber(n)}  •  ${n}`;
 
+      // Set back-face image (1–44 cycling)
+      latestImageEl.src = `public/aki/${((n - 1) % 44) + 1}.jpg`;
+
       historyNums.unshift(n);
-      const previousFive = historyNums.slice(1, 6).map(String);
+      const previousFive = historyNums.slice(0, 5).map(String);
       renderHistory(previousFive);
 
       const cell = cellByNumber.get(n);
@@ -624,6 +711,9 @@
       updateCounts();
 
       if (remaining.length === 0) nextBtn.disabled = true;
+
+      // Flip to reveal image after a short delay
+      setTimeout(() => flipCardInner.classList.add("flipped"), 800);
     }
 
     // ---------- Celebration (fancy fullscreen confetti) ----------
@@ -701,14 +791,24 @@
     }
 
     async function celebrate(){
-      // Visual + overlay
       confettiBurst();
-      bingoOverlay.classList.add("show");
-      setTimeout(() => bingoOverlay.classList.remove("show"), 900);
-
-      // Real voice file
-      await playBingoAudio();
+      bingoVideoOverlay.classList.add("show");
+      bingoVideoEl.currentTime = 0;
+      try {
+        await bingoVideoEl.play();
+      } catch(e) {
+        console.warn("Bingo video play blocked:", e);
+      }
     }
+
+    // Dismiss bingo video on click or when it ends
+    bingoVideoOverlay.addEventListener("click", () => {
+      bingoVideoEl.pause();
+      bingoVideoOverlay.classList.remove("show");
+    });
+    bingoVideoEl.addEventListener("ended", () => {
+      bingoVideoOverlay.classList.remove("show");
+    });
 
     // Init
     startNewGame();
